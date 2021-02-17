@@ -22,10 +22,10 @@
     <script
         async
         id="__ada"
-        src="https://static.ada.support/embed.js"
+        src="https://static.ada.support/embed2.js"
         data-lazy
         onload="onLoadHandler()"
-        ></script>
+    ></script>
     <script>
         function onLoadHandler() {
             // Tell framework Embed is ready
@@ -34,29 +34,6 @@
             } catch(err) {
                 console.error("Can not reach native code");
             }
-        }
-    
-        function initializeEmbed(data) {
-            const decodedData = window.atob(data)
-            const parsedData = JSON.parse(decodedData)
-            const { handle, cluster, language, styles, greeting, metaFields } = parsedData;
-            
-            adaEmbed.start({
-                           handle,
-                           parentElement: "parent-element",
-                           cluster,
-                           language,
-                           styles,
-                           greeting,
-                           metaFields
-                           });
-        }
-    
-        function setMetaFields(data) {
-            const decodedData = window.atob(data)
-            const parsedData = JSON.parse(decodedData)
-            
-            adaEmbed.setMetaFields(parsedData);
         }
     </script>
 </html>

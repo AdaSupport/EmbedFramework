@@ -55,6 +55,16 @@ public class AdaWebHost: NSObject {
     /// If commands are sent prior to `embedReady`, store until it can be cleared out
     private var pendingCommands = [String]()
     
+    private lazy var scriptSource: String = {
+        do {
+            let bundle = Bundle(for: AdaWebHost.self)
+            guard let sourcePath = bundle.path(forResource: "AdaEmbed", ofType: "html") else { return "" }
+            return try String(contentsOfFile: sourcePath)
+        } catch {
+            return ""
+        }
+    }()
+    
     public init(
         handle: String,
         cluster: String = "",
@@ -124,9 +134,9 @@ public class AdaWebHost: NSObject {
     
     /// Push a dictionary of fields to the server
     public func setMetaFields(_ fields: [String: Any]) {
-        let serializedData = try! JSONSerialization.data(withJSONObject: fields, options: [])
-        let encodedData = serializedData.base64EncodedString()
-        let toRun = "setMetaFields('\(encodedData)');"
+        guard let json = try? JSONSerialization.data(withJSONObject: fields, options: .fragmentsAllowed),
+            let jsonString = String(data: json, encoding: .utf8) else { return }
+        let toRun = "adaEmbed.setMetaFields(\(jsonString));"
         
         self.evalJS(toRun)
     }
@@ -191,7 +201,7 @@ extension AdaWebHost {
     private func setupWebView() {
         let configuration = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
-        let clusterString = cluster.isEmpty ? "" : "\(cluster)."
+
         configuration.userContentController = userContentController
         configuration.mediaTypesRequiringUserActionForPlayback = []
         webView = WKWebView(frame: .zero, configuration: configuration)
@@ -200,9 +210,7 @@ extension AdaWebHost {
         webView.navigationDelegate = self
         webView.uiDelegate = self
         
-        guard let remoteURL = URL(string: "https://\(handle).\(clusterString)ada.support/mobile-sdk-webview/") else { return }
-        let webRequest = URLRequest(url: remoteURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
-        webView.load(webRequest)
+        webView.loadHTMLString(scriptSource, baseURL: nil)
         
         // Bind handlers for JS messages
         userContentController.add(self, name: "embedReady")
@@ -277,7 +285,7 @@ extension AdaWebHost: WKScriptMessageHandler {
 }
 
 extension AdaWebHost {
-    private func initializeWebView() {        
+    private func initializeWebView() {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: self.metafields, options: [])
             let json = String(data: jsonData, encoding: .utf8) ?? "{}"
