@@ -12,7 +12,9 @@ import WebKit
 class AdaWebHostViewController: UIViewController {
     static func createWebController(with webView: WKWebView) -> AdaWebHostViewController {
         let bundle = Bundle(for: AdaWebHostViewController.self)
-        let storyboard = UIStoryboard(name: "AdaWebHostViewController", bundle: bundle)
+        let frameworkBundlePath = bundle.path(forResource: "AdaEmbedFramework", ofType: "bundle")!
+        let frameworkBundle = Bundle(path: frameworkBundlePath)
+        let storyboard = UIStoryboard(name: "AdaWebHostViewController", bundle: frameworkBundle)
         guard let viewController = storyboard.instantiateInitialViewController() as? AdaWebHostViewController else { fatalError("This should never, ever happen.") }
         viewController.webView = webView
         return viewController

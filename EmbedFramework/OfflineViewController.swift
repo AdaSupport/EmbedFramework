@@ -17,7 +17,9 @@ class OfflineViewController: UIViewController {
     
     static func create() -> OfflineViewController? {
         let bundle = Bundle(for: OfflineViewController.self)
-        let storyboard = UIStoryboard(name: "AdaWebHostViewController", bundle: bundle)
+        let frameworkBundlePath = bundle.path(forResource: "AdaEmbedFramework", ofType: "bundle")!
+        let frameworkBundle = Bundle(path: frameworkBundlePath)
+        let storyboard = UIStoryboard(name: "AdaWebHostViewController", bundle: frameworkBundle)
         return storyboard.instantiateViewController(withIdentifier: "OfflineViewController") as? OfflineViewController
     }
     

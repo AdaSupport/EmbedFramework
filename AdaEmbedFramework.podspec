@@ -10,6 +10,6 @@ Pod::Spec.new do |spec|
   spec.platform     = :ios, "10.0"
   spec.source       = { :git => "https://github.com/AdaSupport/ios-sdk.git", :branch => 'master', :tag => spec.version.to_s }
   spec.source_files = "EmbedFramework/**/*.swift"
-  spec.resources    = ['EmbedFramework/**/*.xcassets', 'EmbedFramework/AdaWebHostViewController.storyboard']
+  spec.resource_bundles = { "AdaEmbedFramework" => ['EmbedFramework/**/*.xcassets', 'EmbedFramework/AdaWebHostViewController.storyboard'] }
   spec.swift_version = '5.0'
 end
